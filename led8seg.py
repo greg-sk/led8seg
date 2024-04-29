@@ -177,8 +177,10 @@ class DDriver:
         self.brightness_period = round(60000 * self.brightness // self.freq)
         self.display = [DDisplay(screen_time=screen_time)]
         self.spi = SPI(1, 10_000_000, polarity=0, phase=0, sck=Pin(sck_pin), mosi=Pin(mosi_pin), miso=None)
-        self.display_timer = Timer()
-        self.display_timer.init(freq=freq, mode=Timer.PERIODIC, callback=self.show)
+        # self.display_timer = Timer()
+        # self.display_timer.init(freq=freq, mode=Timer.PERIODIC, callback=self.show)
+        # run on the second core instead:
+        _thread.start_new_thread(self.loop, ())
 
 
     def value(self, dstate, screen_no=0, display_no=0):
@@ -192,10 +194,10 @@ class DDriver:
     # this method runs up to 100 times per second
     # so it must optimized for garbage collector
     # focus on not allocating memory, so that gc is not run often as it makes display flickering
-    def show(self, timer):
+    def show(self, timer=None):
         self.counter += 1
         # if self.counter % 200 == 0:
-            # print(f"led8seg.show: {_thread.get_ident()=}")
+        #     print(f"led8seg.show: {_thread.get_ident()=}")
         for disp in self.display:
             # determine which frame to display
             frameno = (self.counter // round(self.freq * disp.screen_time)) % len(disp.screens)
@@ -213,13 +215,21 @@ class DDriver:
                 self.spi.write(DState.BLANK)
                 disp.cs(1)
 
+    def loop(self):
+        while(True):
+            start = time.ticks_us()
+            self.show()
+            elapsed_us = time.ticks_diff(time.ticks_us(), start)
+            time.sleep_us(1000000//self.freq-elapsed_us)
 
 
 def main():
-    driver = DDriver(brightness=0.9, screen_time=0.2)
+    driver = DDriver(brightness=0.5, screen_time=2.0)
     time.sleep(1)
     driver.value(DState.blank())
     time.sleep(1)
+
+    print(f"led main: {_thread.get_ident()=}")
 
     ds1 = DState.from_float(-3.45678, dot_pos=1)
     ds1.digit(3, DState.Segments['P'])
@@ -230,15 +240,15 @@ def main():
     driver.value(ds2, screen_no=0)
     ds3 = DState.from_int(8888)
     driver.value(ds3, screen_no=1)
-    time.sleep(4)
+    time.sleep(400)
 
     driver.values(DPattern.SWIRL2)
 
-    # print(f"led main: {_thread.get_ident()=}")
     print("Wait forever")
     time.sleep(1000000000)
 
 
 if __name__ == "__main__":
     main()
+    
 
