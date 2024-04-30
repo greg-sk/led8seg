@@ -179,7 +179,7 @@ class DDriver:
         self.spi = SPI(1, 10_000_000, polarity=0, phase=0, sck=Pin(sck_pin), mosi=Pin(mosi_pin), miso=None)
         # self.display_timer = Timer()
         # self.display_timer.init(freq=freq, mode=Timer.PERIODIC, callback=self.show)
-        # run on the second core instead:
+        # run on the separate CPU core1 to prevent flickering caused by interference by other tasks
         _thread.start_new_thread(self.loop, ())
 
 
@@ -215,6 +215,7 @@ class DDriver:
                 self.spi.write(DState.BLANK)
                 disp.cs(1)
 
+    # run that loop on CPU core1 to prevent glitches caused by other tasks interference
     def loop(self):
         while(True):
             start = time.ticks_us()
