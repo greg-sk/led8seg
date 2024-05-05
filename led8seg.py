@@ -21,7 +21,7 @@ class DState:
     Segments_Chars = {' ': b'\x00', '0': b'\x3f', '1': b'\x06', '2': b'\x5b', '3': b'\x4f', '4': b'\x66', '5': b'\x6d', 
                 '6': b'\x7d', '7': b'\x07', '8': b'\x7f', '9': b'\x6f', 'A': b'\x77', 'b': b'\x7c', 'C': b'\x39',
                 'c': b'\x58', 'd': b'\x5e', 'E': b'\x79', 'F': b'\x71', 'h': b'\x74', 'H': b'\x76', 'i': b'\x10', 
-                'I': b'\x30', 'L': b'\x38', 'O': b'\x3f', 'o': b'\x5c', 'P': b'\x73', 'r': b'\x50',  'S': b'\x6d',
+                'I': b'\x30', 'L': b'\x38', 'O': b'\x3f', 'o': b'\x5c', 'P': b'\x73', 'r': b'\x50',  'S': b'\x6d', 't': b'\x78',
                 'U': b'\x3e', 'u': b'\x1c', '-': b'\x40', '|': b'\x30', '^': b'\x23', '_': b'\x08', '~': b'\x01', 
                 '!': b'\x02', '/': b'\x04', '(': b'\x21', ')': b'\x03', '<': b'\x18', '>': b'\x0c', '.': b'\x80',
                 '?': b'\x53', '"': b'\x36', ':': b'\x48', ';': b'\x09'}
@@ -36,6 +36,7 @@ class DState:
 
     @staticmethod
     def from_int(v, align_left=False, leading_zeros=False, dot_pos=None):
+        #TODO change leading_zeros from bool to int to indicate how many leading zeros should be displayed
         f = "%4d" % v
         if leading_zeros:
             f = "%04d" % v
@@ -52,7 +53,7 @@ class DState:
                 dot_pos2 = 2
             else:
                 dot_pos2 = 3
-        return DState.from_int(d, leading_zeros=leading_zeros, dot_pos=dot_pos2)
+        return DState.from_int(d, leading_zeros=True, dot_pos=dot_pos2)
 
     @staticmethod
     def from_string(v, align_left=False, dot_pos=None):
