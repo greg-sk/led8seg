@@ -35,25 +35,31 @@ class DState:
     HYPHEN = Segments['-']
 
     @staticmethod
-    def from_int(v, align_left=False, leading_zeros=False, dot_pos=None):
-        #TODO change leading_zeros from bool to int to indicate how many leading zeros should be displayed
+    def from_int(v, align_left=False, leading_zeros=0, dot_pos=None):
+        if v < -999 or v > 9999:
+            return DState.from_string("oor")
         f = "%4d" % v
-        if leading_zeros:
+        if leading_zeros == 1:
+            f = "%01d" % v
+        elif leading_zeros == 2:
+            f = "%02d" % v
+        elif leading_zeros == 3:
+            f = "%03d" % v
+        elif leading_zeros >= 4:
             f = "%04d" % v
+            
         if align_left:
             f = "%-4d" % v
+
         return DState.from_string(f, align_left=align_left, dot_pos=dot_pos)
 
     @staticmethod
-    def from_float(v, leading_zeros=False, dot_pos=2):
+    def from_float(v, dot_pos=2):
         d = int(round(v*pow(10, max(0, dot_pos))))
-        dot_pos2 = dot_pos
-        if dot_pos > 2:
-            if v < 0:
-                dot_pos2 = 2
-            else:
-                dot_pos2 = 3
-        return DState.from_int(d, leading_zeros=True, dot_pos=dot_pos2)
+        leading_zeros = dot_pos + 1
+        if v < 0:
+            leading_zeros = dot_pos + 2
+        return DState.from_int(d, leading_zeros=leading_zeros, dot_pos=dot_pos)
 
     @staticmethod
     def from_string(v, align_left=False, dot_pos=None):
@@ -233,18 +239,54 @@ def main():
 
     print(f"led main: {_thread.get_ident()=}")
 
-    ds1 = DState.from_float(-3.45678, dot_pos=1)
-    ds1.digit(3, DState.Segments['P'])
-    driver.value(ds1)
-    time.sleep(1)
+    # ds1 = DState.from_float(-3.45678, dot_pos=1)
+    # ds1.digit(3, DState.Segments['P'])
+    # driver.value(ds1)
+    # time.sleep(1)
 
-    ds2 = DState.from_int(9999)
-    driver.value(ds2, screen_no=0)
-    ds3 = DState.from_int(8888)
-    driver.value(ds3, screen_no=1)
-    time.sleep(400)
+    # ds2 = DState.from_int(9999)
+    # driver.value(ds2, screen_no=0)
+    # ds3 = DState.from_int(8888)
+    # driver.value(ds3, screen_no=1)
+    # time.sleep(400)
 
-    driver.values(DPattern.SWIRL2)
+    # driver.values(DPattern.SWIRL2)
+
+
+    # driver.value(DState.from_int(1, leading_zeros=0), screen_no=0)
+    # driver.value(DState.from_int(2, leading_zeros=1), screen_no=1)
+    # driver.value(DState.from_int(3, leading_zeros=2), screen_no=2)
+    # driver.value(DState.from_int(4, leading_zeros=3), screen_no=3)
+    # driver.value(DState.from_int(5, leading_zeros=4), screen_no=4)
+
+
+
+    # driver.value(DState.from_float(0.001, dot_pos=3), screen_no=0)
+    # driver.value(DState.from_float(0.021, dot_pos=3), screen_no=1)
+    # driver.value(DState.from_float(0.321, dot_pos=3), screen_no=2)
+    # driver.value(DState.from_float(4.321, dot_pos=3), screen_no=3)
+    # driver.value(DState.from_float(0.01, dot_pos=2), screen_no=0)
+    # driver.value(DState.from_float(0.21, dot_pos=2), screen_no=1)
+    # driver.value(DState.from_float(3.21, dot_pos=2), screen_no=2)
+    # driver.value(DState.from_float(43.21, dot_pos=2), screen_no=3)
+    # driver.value(DState.from_float(0.1, dot_pos=1), screen_no=0)
+    # driver.value(DState.from_float(2.1, dot_pos=1), screen_no=1)
+    # driver.value(DState.from_float(32.1, dot_pos=1), screen_no=2)
+    # driver.value(DState.from_float(432.1, dot_pos=1), screen_no=3)
+
+    # driver.value(DState.from_float(-0.001, dot_pos=3), screen_no=0)
+    # driver.value(DState.from_float(-0.021, dot_pos=3), screen_no=1)
+    # driver.value(DState.from_float(-0.321, dot_pos=3), screen_no=2)
+    # driver.value(DState.from_float(-4.321, dot_pos=3), screen_no=3)
+    # driver.value(DState.from_float(-0.01, dot_pos=2), screen_no=0)
+    # driver.value(DState.from_float(-0.21, dot_pos=2), screen_no=1)
+    # driver.value(DState.from_float(-3.21, dot_pos=2), screen_no=2)
+    # driver.value(DState.from_float(-43.21, dot_pos=2), screen_no=3)
+    # driver.value(DState.from_float(-0.1, dot_pos=1), screen_no=0)
+    # driver.value(DState.from_float(-2.1, dot_pos=1), screen_no=1)
+    # driver.value(DState.from_float(-32.1, dot_pos=1), screen_no=2)
+    # driver.value(DState.from_float(-432.1, dot_pos=1), screen_no=3)
+
 
     print("Wait forever")
     time.sleep(1000000000)
