@@ -21,7 +21,7 @@ class DState:
     Segments_Chars = {' ': b'\x00', '0': b'\x3f', '1': b'\x06', '2': b'\x5b', '3': b'\x4f', '4': b'\x66', '5': b'\x6d', 
                 '6': b'\x7d', '7': b'\x07', '8': b'\x7f', '9': b'\x6f', 'A': b'\x77', 'b': b'\x7c', 'C': b'\x39',
                 'c': b'\x58', 'd': b'\x5e', 'E': b'\x79', 'F': b'\x71', 'h': b'\x74', 'G': b'\x3d', 'g': b'\x6f', 'H': b'\x76', 'i': b'\x10', 
-                'I': b'\x30', 'L': b'\x38', 'O': b'\x3f', 'o': b'\x5c', 'P': b'\x73', 'r': b'\x50',  'S': b'\x6d', 't': b'\x78',
+                'I': b'\x30', 'L': b'\x38', 'l': b'\x30', 'O': b'\x3f', 'o': b'\x5c', 'P': b'\x73', 'r': b'\x50',  'S': b'\x6d', 't': b'\x78',
                 'U': b'\x3e', 'u': b'\x1c', '-': b'\x40', '|': b'\x30', '^': b'\x23', '_': b'\x08', '~': b'\x01', 
                 '!': b'\x02', '/': b'\x04', '(': b'\x21', ')': b'\x03', '<': b'\x18', '>': b'\x0c', '.': b'\x80',
                 '?': b'\x53', '"': b'\x36', ':': b'\x48', ';': b'\x09'}
@@ -179,10 +179,13 @@ class DDisplay:
 class DDriver:
     def __init__(self, mosi_pin=11, sck_pin=10, brightness=0.5, freq=60, screen_time=1.5):
         self.counter = 0
+        #TODO enforce freq < 100
         self.freq = freq
+        # brightness in range 0.0 to 1.0
         self.brightness = brightness
-        # in microseconds
-        self.brightness_period = round(60000 * self.brightness // self.freq)
+        # brightness_period - period a single digit is displayed in microseconds
+        # 4 * brightness_period must be less than 1/freq
+        self.brightness_period = round(120000 * self.brightness // self.freq)
         self.display = [DDisplay(screen_time=screen_time)]
         self.spi = SPI(1, 10_000_000, polarity=0, phase=0, sck=Pin(sck_pin), mosi=Pin(mosi_pin), miso=None)
         # self.display_timer = Timer()
