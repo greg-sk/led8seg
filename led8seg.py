@@ -85,7 +85,8 @@ class DState:
 
     def __init__(self, digits=None):
         if digits == None:
-            digits = [DState.EIGHT, DState.EIGHT, DState.EIGHT, DState.EIGHT]
+            # digits = [DState.EIGHT, DState.EIGHT, DState.EIGHT, DState.EIGHT]
+            digits = [DState.BLANK, DState.BLANK, DState.BLANK, DState.BLANK]
         self.digits = digits
 
     def digit(self, pos, v):
